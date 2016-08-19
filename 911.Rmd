@@ -1,0 +1,51 @@
+---
+title: "A Data Cleaning Project"
+author: "Pranay Aryal"
+date: "8/18/2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Introduction
+This document tries to analyze the data about calls to 911 in Montgomery County, PA. The dataset was downloaded from Kaggle.
+
+Let's load the libraries and read the dataset
+```{r echo=TRUE, eval=TRUE, message=FALSE}
+library(readr)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(DT)
+nine <- read_csv('911.csv')
+```
+
+Let's see what the column names are and a small chunk of the data
+```{r echo=TRUE, eval=TRUE}
+names(nine)
+```
+The columns seem to be latitude, longitude, description, zip code, the title of the 911-emergency, the time of occurrence, the place, address and e
+
+The last column "e" has the same value `r nine$e %>% unique` for all rows, so we will remove it
+```{r echo=TRUE, eval=TRUE}
+nine$e %>% unique()
+nine <- nine %>% select(-e)
+```
+
+Let's check if it was removed
+```{r echo=TRUE, eval=TRUE}
+names(nine)
+```
+
+Okay. Let's try to understand the description column. Let's have a look at 3 of them
+```{r echo=TRUE, eval=TRUE}
+nine$desc %>% head(3)
+```
+There seems to 
+
+Look for missing or NA values
+```{r echo=TRUE, eval=TRUE}
+sapply(nine, function(x)is.na(x) %>% table %>% prop.table)
+```
