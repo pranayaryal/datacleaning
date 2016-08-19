@@ -19,7 +19,7 @@ library(ggplot2)
 library(dplyr)
 library(tidyr)
 library(DT)
-nine <- read_csv('911.csv')
+nine <- read_csv('~/Downloads/911.csv')
 ```
 
 Let's see what the column names are and a small chunk of the data
@@ -39,13 +39,38 @@ Let's check if it was removed
 names(nine)
 ```
 
+Here is some description about the columns
+
+name                | Description
+--------------------|--------------------------------
+lat                 | Latitude
+lng                 | Longitude
+desc                | Description of the Emergency Call
+zip                 |  Zip code
+title               | Title
+timeStamp           | YYYY-MM-DD HH:MM:SS
+twp                 | Township
+addr                | Address
+e                   | Dummy variable(always 1)
+
+
 Okay. Let's try to understand the description column. Let's have a look at 3 of them
 ```{r echo=TRUE, eval=TRUE}
 nine$desc %>% head(3)
 ```
-There seems to 
+It is divided into three parts by semicolons. It looks like the first part is a repitition of the address column. Lets make columns out of these. Lets move the station information to another column. Also the time part as well as the township part
+```{r echo=T, eval=T} 
+nine$station <- unlist(strsplit(nine$desc, ';'))[3]
+nine$station <- gsub(' ', '', nine$station)
+nine$time_from_desc = unlist(strsplit(nine$desc, ';'))[4]
+```
+The first part is the street and the second part of the string is township. We can remove both of them from the character vector, Since we have extracted most of the information out of this column, we can discard it fully
+```{r echo=T, eval=T}
+nine <- nine %>% select(-desc)
+```
+The columns we are left with now are: `r names(nine)`
 
-Look for missing or NA values
+##Looking for missing values in the dataset
 ```{r echo=TRUE, eval=TRUE}
 sapply(nine, function(x)is.na(x) %>% table %>% prop.table)
 ```
